@@ -1,6 +1,7 @@
 import streamlit as st
 import folium
 from streamlit_folium import st_folium
+import pandas as pd
 
 # Page Configuration
 st.set_page_config(page_title="Shipyard Home", layout="wide")
@@ -23,13 +24,13 @@ page_bg_css = """
 """
 st.markdown(page_bg_css, unsafe_allow_html=True)
 
-# Footer with Contact Details (Shifted Slightly to the Right)
+# Footer with Contact Details
 st.markdown("""
     <style>
         .footer {
             position: fixed;
             bottom: 10px;
-            right: 30px; /* Adjusted to shift right */
+            right: 30px;
             background-color: #1E1E1E;
             color: white;
             padding: 10px 20px;
@@ -43,9 +44,6 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Container Image
-st.image("https://tse2.mm.bing.net/th?id=OIP.T_opll1SQqwYoouWp-ZXWQHaDS&pid=Api&P=0&h=180", use_column_width=True)
-
 # Map of Hindustan Shipyard, Vizag
 st.markdown("## 📍 Hindustan Shipyard, Vizag")
 
@@ -56,8 +54,8 @@ folium.Marker([17.6983, 83.2913], popup="Hindustan Shipyard, Vizag", tooltip="Hi
 # Display Map
 st_folium(map, width=900, height=500)
 
-# 🚢 Shipyard Data Section
-st.markdown("## 🚢 Shipyard Insights & Operations")
+# Shipyard Data Section
+st.markdown("## 💀 Shipyard Insights & Operations")
 
 # Random Shipyard Data
 shipyard_data = {
@@ -75,7 +73,6 @@ for key, value in shipyard_data.items():
 
 # Display Recent Shipbuilding Projects (Dummy Table)
 st.markdown("### ⚓ Recent Shipbuilding Projects")
-import pandas as pd
 
 ship_projects = pd.DataFrame({
     "Project Name": ["INS Vikrant", "Cargo Carrier X", "Naval Frigate Y", "Oil Tanker Z", "Luxury Yacht A"],
@@ -94,3 +91,6 @@ repair_data = pd.DataFrame({
 })
 
 st.table(repair_data)
+
+# Display Image at the Last
+st.image("https://tse2.mm.bing.net/th?id=OIP.T_opll1SQqwYoouWp-ZXWQHaDS&pid=Api&P=0&h=180", use_column_width=True)
