@@ -24,6 +24,9 @@ page_bg_css = """
 """
 st.markdown(page_bg_css, unsafe_allow_html=True)
 
+# Display First Image at the Top
+st.image("https://tse2.mm.bing.net/th?id=OIP.T_opll1SQqwYoouWp-ZXWQHaDS&pid=Api&P=0&h=180", use_column_width=True)
+
 # Footer with Contact Details
 st.markdown("""
     <style>
@@ -55,7 +58,7 @@ folium.Marker([17.6983, 83.2913], popup="Hindustan Shipyard, Vizag", tooltip="Hi
 st_folium(map, width=900, height=500)
 
 # Shipyard Data Section
-st.markdown("## 💀 Shipyard Insights & Operations")
+st.markdown("## 🚢 Shipyard Insights & Operations")
 
 # Random Shipyard Data
 shipyard_data = {
@@ -92,5 +95,5 @@ repair_data = pd.DataFrame({
 
 st.table(repair_data)
 
-# Display Image at the Last
+# Display Last Image at the Bottom
 st.image("https://globalmaritimehub.com/wp-content/uploads/2020/12/newbuild-shipping-1024x620.png", use_column_width=True)
