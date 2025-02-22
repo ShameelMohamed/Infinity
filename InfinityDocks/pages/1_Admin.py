@@ -21,11 +21,13 @@ page_bg_css = """
 """
 st.markdown(page_bg_css, unsafe_allow_html=True)
 
-# Initialize Firebase only once
-if "firebase_initialized" not in st.session_state:
-    cred = credentials.Certificate(dict(st.secrets["firebase"]))
-    firebase_admin.initialize_app(cred)
-    st.session_state.firebase_initialized = True  # Prevent reinitialization
+# ✅ Initialize Firebase only once
+if not firebase_admin._apps:
+    try:
+        cred = credentials.Certificate(dict(st.secrets["firebase"]))
+        firebase_admin.initialize_app(cred)
+    except Exception as e:
+        st.error(f"Firebase Initialization Error: {e}")
 
 db = firestore.client()
 
@@ -40,7 +42,7 @@ password = st.text_input("Enter Password", type="password")
 if st.button("Login") and not st.session_state.authenticated:
     if password == "admin123":
         st.session_state.authenticated = True
-        st.rerun()  # Force re-render to show content
+        st.rerun()  # Refresh UI to show content
     else:
         st.error("❌ Incorrect password. Try again!")
 
@@ -105,7 +107,7 @@ if st.session_state.authenticated:
             st.plotly_chart(fig2)
         
         st.subheader("💰 Revenue & Financial Reports")
-        fig3 = px.line(revenue_data, x='Month', y='Revenue', title='Monthly Revenue')
+        fig3 = px.line(revenue_data, x='Month', y='Revenue', title="Monthly Revenue")
         st.plotly_chart(fig3)
 
         st.subheader("📝 Recent Export Requests")
