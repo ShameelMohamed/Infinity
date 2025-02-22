@@ -6,7 +6,7 @@ import plotly.express as px
 
 st.set_page_config(page_title="Tenders", page_icon="🚢", layout="wide", initial_sidebar_state="collapsed")
 
-# Background Styling
+# ✅ Background Styling
 page_bg_css = """
 <style>
     header { visibility: hidden; }
@@ -21,7 +21,7 @@ page_bg_css = """
 """
 st.markdown(page_bg_css, unsafe_allow_html=True)
 
-# ✅ Initialize Firebase only once
+# ✅ Initialize Firebase (Only Once)
 if not firebase_admin._apps:
     try:
         cred = credentials.Certificate(dict(st.secrets["firebase"]))
@@ -31,11 +31,11 @@ if not firebase_admin._apps:
 
 db = firestore.client()
 
-# Authentication State
+# ✅ Session State for Authentication
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
-# Admin Login
+# ✅ Admin Login
 st.title("🔒 Admin Panel")
 password = st.text_input("Enter Password", type="password")
 
@@ -46,80 +46,85 @@ if st.button("Login") and not st.session_state.authenticated:
     else:
         st.error("❌ Incorrect password. Try again!")
 
-# Display content if authenticated
+# ✅ Show Content Immediately After Authentication
 if st.session_state.authenticated:
     st.success("✅ Access Granted!")
 
-    with st.container():
-        # Function to fetch Firestore data
-        @st.cache_data
-        def fetch_collection(collection_name):
-            try:
-                docs = db.collection(collection_name).stream()
-                data = [{"id": doc.id, **doc.to_dict()} for doc in docs]
-                return pd.DataFrame(data)
-            except Exception as e:
-                st.error(f"Error fetching {collection_name}: {e}")
-                return pd.DataFrame()
+    # ✅ Show Static Page Content First
+    st.subheader("📌 Grievances")
+    grievances_container = st.empty()
 
-        # Fetch collections
-        grievances_df = fetch_collection("grievances")
-        tender_bids_df = fetch_collection("tender_bids")
-        ship_orders_df = fetch_collection("ship_orders")
+    st.subheader("📌 Tender Bids")
+    tender_bids_container = st.empty()
 
-        # Display Firebase Collections
-        st.subheader("📌 Grievances")
-        st.dataframe(grievances_df)
+    st.subheader("📌 Ship Orders")
+    ship_orders_container = st.empty()
 
-        st.subheader("📌 Tender Bids")
-        st.dataframe(tender_bids_df)
+    st.header("📊 Dashboard Overview")
 
-        st.subheader("📌 Ship Orders")
-        st.dataframe(ship_orders_df)
+    # ✅ Sample Data for Charts (Displays Instantly)
+    shipment_status = pd.DataFrame({
+        "Status": ["Completed", "In-Transit", "Delayed"],
+        "Count": [50, 30, 10]
+    })
+    stock_summary = pd.DataFrame({
+        "Item": ["Steel", "Paint", "Oil", "Spare Parts"],
+        "Stock": [100, 50, 20, 80]
+    })
+    revenue_data = pd.DataFrame({
+        "Month": ["Jan", "Feb", "Mar", "Apr", "May"],
+        "Revenue": [50000, 60000, 70000, 65000, 80000]
+    })
 
-        # Dashboard Section
-        st.header("📊 Dashboard Overview")
+    # ✅ Display Charts
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("📦 Total Shipments")
+        fig1 = px.pie(shipment_status, values='Count', names='Status', title='Shipment Status')
+        st.plotly_chart(fig1)
+    
+    with col2:
+        st.subheader("📊 Stock Summary")
+        fig2 = px.bar(stock_summary, x='Item', y='Stock', title='Stock Levels')
+        st.plotly_chart(fig2)
+    
+    st.subheader("💰 Revenue & Financial Reports")
+    fig3 = px.line(revenue_data, x='Month', y='Revenue', title="Monthly Revenue")
+    st.plotly_chart(fig3)
 
-        # Sample Data for Charts
-        shipment_status = pd.DataFrame({
-            "Status": ["Completed", "In-Transit", "Delayed"],
-            "Count": [50, 30, 10]
-        })
-        stock_summary = pd.DataFrame({
-            "Item": ["Steel", "Paint", "Oil", "Spare Parts"],
-            "Stock": [100, 50, 20, 80]
-        })
-        revenue_data = pd.DataFrame({
-            "Month": ["Jan", "Feb", "Mar", "Apr", "May"],
-            "Revenue": [50000, 60000, 70000, 65000, 80000]
-        })
+    st.subheader("📝 Recent Export Requests")
+    export_requests = pd.DataFrame({
+        "Order ID": [101, 102, 103],
+        "Status": ["Pending", "Shipped", "Delivered"]
+    })
+    st.dataframe(export_requests)
 
-        # Display Charts
-        col1, col2 = st.columns(2)
-        with col1:
-            st.subheader("📦 Total Shipments")
-            fig1 = px.pie(shipment_status, values='Count', names='Status', title='Shipment Status')
-            st.plotly_chart(fig1)
-        
-        with col2:
-            st.subheader("📊 Stock Summary")
-            fig2 = px.bar(stock_summary, x='Item', y='Stock', title='Stock Levels')
-            st.plotly_chart(fig2)
-        
-        st.subheader("💰 Revenue & Financial Reports")
-        fig3 = px.line(revenue_data, x='Month', y='Revenue', title="Monthly Revenue")
-        st.plotly_chart(fig3)
+    st.subheader("👤 User Activities")
+    user_logs = pd.DataFrame({
+        "User": ["Alice", "Bob", "Charlie"],
+        "Activity": ["Submitted Tender", "Checked Ship Status", "Uploaded Document"]
+    })
+    st.dataframe(user_logs)
 
-        st.subheader("📝 Recent Export Requests")
-        export_requests = pd.DataFrame({
-            "Order ID": [101, 102, 103],
-            "Status": ["Pending", "Shipped", "Delivered"]
-        })
-        st.dataframe(export_requests)
+    # ✅ Fetch Firestore Data in Background (Displays Once Loaded)
+    def fetch_and_display_data():
+        try:
+            grievances = db.collection("grievances").stream()
+            grievances_data = [{"id": doc.id, **doc.to_dict()} for doc in grievances]
+            grievances_df = pd.DataFrame(grievances_data)
+            grievances_container.dataframe(grievances_df)
 
-        st.subheader("👤 User Activities")
-        user_logs = pd.DataFrame({
-            "User": ["Alice", "Bob", "Charlie"],
-            "Activity": ["Submitted Tender", "Checked Ship Status", "Uploaded Document"]
-        })
-        st.dataframe(user_logs)
+            tender_bids = db.collection("tender_bids").stream()
+            tender_bids_data = [{"id": doc.id, **doc.to_dict()} for doc in tender_bids]
+            tender_bids_df = pd.DataFrame(tender_bids_data)
+            tender_bids_container.dataframe(tender_bids_df)
+
+            ship_orders = db.collection("ship_orders").stream()
+            ship_orders_data = [{"id": doc.id, **doc.to_dict()} for doc in ship_orders]
+            ship_orders_df = pd.DataFrame(ship_orders_data)
+            ship_orders_container.dataframe(ship_orders_df)
+
+        except Exception as e:
+            st.error(f"Error fetching Firestore data: {e}")
+
+    fetch_and_display_data()
