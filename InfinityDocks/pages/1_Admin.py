@@ -105,7 +105,7 @@ if st.session_state.authenticated:
             st.plotly_chart(fig2)
         
         st.subheader("💰 Revenue & Financial Reports")
-        fig3 = px.line(revenue_data, x='Month', y='Revenue', title='Monthly Revenue")
+        fig3 = px.line(revenue_data, x='Month', y='Revenue', title='Monthly Revenue')
         st.plotly_chart(fig3)
 
         st.subheader("📝 Recent Export Requests")
