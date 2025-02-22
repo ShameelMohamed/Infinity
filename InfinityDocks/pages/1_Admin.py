@@ -6,7 +6,7 @@ import plotly.express as px
 
 st.set_page_config(page_title="Tenders", page_icon="🚢", layout="wide", initial_sidebar_state="collapsed")
 
-# Set background
+# Background Styling
 page_bg_css = """
 <style>
     header { visibility: hidden; }
@@ -22,9 +22,10 @@ page_bg_css = """
 st.markdown(page_bg_css, unsafe_allow_html=True)
 
 # Initialize Firebase only once
-if not firebase_admin._apps:
+if "firebase_initialized" not in st.session_state:
     cred = credentials.Certificate(dict(st.secrets["firebase"]))
     firebase_admin.initialize_app(cred)
+    st.session_state.firebase_initialized = True  # Prevent reinitialization
 
 db = firestore.client()
 
@@ -36,18 +37,20 @@ if "authenticated" not in st.session_state:
 st.title("🔒 Admin Panel")
 password = st.text_input("Enter Password", type="password")
 
-if st.button("Login"):
+if st.button("Login") and not st.session_state.authenticated:
     if password == "admin123":
         st.session_state.authenticated = True
+        st.rerun()  # Force re-render to show content
     else:
-        st.error("Incorrect password. Try again!")
+        st.error("❌ Incorrect password. Try again!")
 
-# If authenticated, display the dashboard without rerunning
+# Display content if authenticated
 if st.session_state.authenticated:
     st.success("✅ Access Granted!")
 
     with st.container():
         # Function to fetch Firestore data
+        @st.cache_data
         def fetch_collection(collection_name):
             try:
                 docs = db.collection(collection_name).stream()
@@ -74,7 +77,7 @@ if st.session_state.authenticated:
 
         # Dashboard Section
         st.header("📊 Dashboard Overview")
-        
+
         # Sample Data for Charts
         shipment_status = pd.DataFrame({
             "Status": ["Completed", "In-Transit", "Delayed"],
@@ -102,7 +105,7 @@ if st.session_state.authenticated:
             st.plotly_chart(fig2)
         
         st.subheader("💰 Revenue & Financial Reports")
-        fig3 = px.line(revenue_data, x='Month', y='Revenue', title='Monthly Revenue')
+        fig3 = px.line(revenue_data, x='Month', y='Revenue', title='Monthly Revenue")
         st.plotly_chart(fig3)
 
         st.subheader("📝 Recent Export Requests")
