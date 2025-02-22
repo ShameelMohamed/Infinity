@@ -93,4 +93,4 @@ repair_data = pd.DataFrame({
 st.table(repair_data)
 
 # Display Image at the Last
-st.image("https://tse2.mm.bing.net/th?id=OIP.T_opll1SQqwYoouWp-ZXWQHaDS&pid=Api&P=0&h=180", use_column_width=True)
+st.image("https://globalmaritimehub.com/wp-content/uploads/2020/12/newbuild-shipping-1024x620.png", use_column_width=True)
