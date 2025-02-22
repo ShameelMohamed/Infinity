@@ -364,7 +364,7 @@ if show_shipbuilding:
 
     # Initialize Firestore (only once) - OUTSIDE THE CONDITIONAL BLOCK
     if not firebase_admin._apps:
-        cred = credentials.Certificate("your_firebase_credentials.json")  # Replace with your actual path
+        cred = credentials.Certificate("st.secrets["firebase"]")  # Replace with your actual path
         firebase_admin.initialize_app(cred)
 
     db = firestore.client()
