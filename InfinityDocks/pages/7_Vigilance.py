@@ -6,7 +6,7 @@ st.set_page_config(page_title="Vigilance", page_icon="🚢", layout="wide", init
 
 # Initialize Firebase Admin (Only once)
 if not firebase_admin._apps:
-    cred = credentials.Certificate("dict(st.secrets["firebase"])")  # Replace with actual path
+    cred = credentials.Certificate(dict(st.secrets["firebase"]))  # Replace with actual path
     firebase_admin.initialize_app(cred)
 
 db = firestore.client()
